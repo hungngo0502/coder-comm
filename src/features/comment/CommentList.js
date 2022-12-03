@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Pagination, Stack, Typography } from "@mui/material";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -6,6 +6,18 @@ import { getComments } from "./commentSlice";
 import CommentCard from "./CommentCard";
 import LoadingScreen from "../../components/LoadingScreen";
 import { COMMENTS_PER_POST } from "../../app/config";
+
+// const style = {
+//   position: "absolute",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   width: 400,
+//   bgcolor: "background.paper",
+//   border: "2px solid #000",
+//   boxShadow: 24,
+//   p: 4,
+// };
 
 function CommentList({ postId }) {
   const {
@@ -26,6 +38,12 @@ function CommentList({ postId }) {
   );
   const totalPages = Math.ceil(totalComments / COMMENTS_PER_POST);
   const dispatch = useDispatch();
+  const [openComment, setOpenComment] = React.useState(false);
+  const [chosenIdComment, setChosenIdComment] = useState(null);
+  const handleChooseComment = (id) => {
+    setOpenComment(true);
+    setChosenIdComment(id);
+  };
 
   useEffect(() => {
     if (postId) dispatch(getComments({ postId }));
@@ -38,7 +56,11 @@ function CommentList({ postId }) {
     renderComments = (
       <Stack spacing={1.5}>
         {comments.map((comment) => (
-          <CommentCard key={comment._id} comment={comment} />
+          <CommentCard
+            key={comment._id}
+            handleChooseComment={handleChooseComment}
+            comment={comment}
+          />
         ))}
       </Stack>
     );

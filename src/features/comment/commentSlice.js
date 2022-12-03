@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
 import apiService from "../../app/apiService";
 import { COMMENTS_PER_POST } from "../../app/config";
+import { toast } from "react-toastify";
 
 const initialState = {
   isLoading: false,
   error: null,
+  commentsById: {},
   commentsByPost: {},
   totalCommentsByPost: {},
   currentPageByPost: {},
-  commentsById: {},
 };
 
 const slice = createSlice({
@@ -29,7 +29,6 @@ const slice = createSlice({
       state.isLoading = false;
       state.error = "";
       const { postId, comments, count, page } = action.payload;
-
       comments.forEach(
         (comment) => (state.commentsById[comment._id] = comment)
       );
@@ -50,6 +49,17 @@ const slice = createSlice({
       state.error = null;
       const { commentId, reactions } = action.payload;
       state.commentsById[commentId].reactions = reactions;
+    },
+
+    deleteCommentSuccess(state, action) {
+      state.isLoading = false;
+      state.error = null;
+      console.log("comment", action.payload.commentId);
+      const postId = action.payload;
+      delete state.commentsById[action.payload.commentId];
+      state.commentsByPost = state.commentsByPost[postId].filter(
+        (commentId) => commentId !== action.payload.commentId
+      );
     },
   },
 });
@@ -119,3 +129,17 @@ export const sendCommentReaction =
       toast.error(error.message);
     }
   };
+
+export const deleteComment = (commentId) => async (dispatch) => {
+  dispatch(slice.actions.startLoading());
+  try {
+    const response = await apiService.delete(`/comments/${commentId}`);
+    dispatch(
+      slice.actions.deleteCommentSuccess({ ...response.data, commentId })
+    );
+    toast.success("Delete successfully");
+  } catch (error) {
+    dispatch(slice.actions.hasError(error.message));
+    toast.error(error.message);
+  }
+};
