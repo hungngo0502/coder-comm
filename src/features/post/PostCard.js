@@ -23,7 +23,7 @@ import { Button, Modal } from "@mui/material";
 
 function PostCard({ post, handleChoose, handleChooseEdit }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
+  const [, setOpen] = React.useState(false);
 
   const handleClose = () => setOpen(false);
 

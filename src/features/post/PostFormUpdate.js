@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Box, Stack, alpha } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { updatedPostProfile } from "./postSlice";
-// import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
@@ -35,7 +34,7 @@ function PostFormUpdate({ post }) {
   };
 
   const methods = useForm({
-    // resolver: yupResolver(UpdateFormSchema),
+    resolver: yupResolver(UpdateFormSchema),
     defaultValues,
   });
 
@@ -73,12 +72,6 @@ function PostFormUpdate({ post }) {
       })
     );
   };
-
-  const handleEdit = (post) => dispatch(updatedPostProfile({ post }));
-
-  const [openEdit, setOpenEdit] = React.useState(false);
-
-  // const handleClose = () => setOpen(false);
 
   return (
     <Box sx={style}>

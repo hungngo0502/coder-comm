@@ -14,7 +14,6 @@ import CommentReaction from "./CommentReaction";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteComment } from "./commentSlice";
 import { useDispatch } from "react-redux";
-import CommentDeleteConfirmation from "./CommentDeleteConfirm";
 
 const style = {
   position: "absolute",
