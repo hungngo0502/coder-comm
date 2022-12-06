@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import apiService from "../../app/apiService";
 import { POST_PER_PAGE } from "../../app/config";
-import useAuth from "../../hooks/useAuth";
 import { cloudinaryUpload } from "../../utils/cloudinary";
 
 const initialState = {
@@ -123,7 +122,6 @@ export const getPosts =
       dispatch(slice.actions.getPostSuccess(response.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error.message));
-      // console.log(state.currentPagePosts);
     }
   };
 
