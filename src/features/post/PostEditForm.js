@@ -56,7 +56,7 @@ function PostEditForm({ post, setIsEditing, page }) {
     data["userId"] = `${post.author._id}`;
     setIsEditing(false);
     dispatch(editPost(data)).then(() => reset());
-    // dispatch(getPosts());
+    dispatch(getPosts());
   };
 
   return (
