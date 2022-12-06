@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Link,
@@ -7,74 +7,24 @@ import {
   Avatar,
   Typography,
   CardHeader,
-  IconButton,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { fDate } from "../../utils/formatTime";
+
 import PostReaction from "./PostReaction";
 import CommentList from "../comment/CommentList";
 import CommentForm from "../comment/CommentForm";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import PostDeleteConfirmation from "./PostDeleteConfirm";
-import PostFormUpdate from "./PostFormUpdate";
-import { Button, Modal } from "@mui/material";
+import useAuth from "../../hooks/useAuth";
+import OptionMenu from "../../components/OptionMenu";
+import PostEditForm from "./PostEditForm";
 
-function PostCard({ post, handleChoose, handleChooseEdit }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [, setOpen] = React.useState(false);
-
-  const handleClose = () => setOpen(false);
-
-  const isMenuOpen = Boolean(anchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const menuId = "primary-option-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem>
-        <Button onClick={() => handleChoose(post._id)}>Delete Post</Button>
-        <Modal>
-          <PostDeleteConfirmation />
-        </Modal>
-      </MenuItem>
-
-      <MenuItem>
-        <Button onClose={handleClose} onClick={() => handleChooseEdit(post)}>
-          Edit Post
-        </Button>
-        <Modal>
-          <PostFormUpdate />
-        </Modal>
-      </MenuItem>
-    </Menu>
-  );
-  console.log("renderMenu", renderMenu);
+function PostCard({ post, page }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuth();
+  const currentUserId = user._id;
 
   return (
-    <Card>
+    <Card sx={{ my: 3 }}>
       <CardHeader
         disableTypography
         avatar={
@@ -100,34 +50,42 @@ function PostCard({ post, handleChoose, handleChooseEdit }) {
           </Typography>
         }
         action={
-          <Box onClick={handleProfileMenuOpen}>
-            <IconButton>
-              <MoreVertIcon sx={{ fontSize: 30 }} />
-            </IconButton>
-          </Box>
+          currentUserId === post.author?._id && (
+            <OptionMenu
+              postId={post._id}
+              target={"post"}
+              setIsEditing={setIsEditing}
+              userId={currentUserId}
+            />
+          )
         }
-      ></CardHeader>
+      />
+
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Typography>{post.content}</Typography>
+        {!isEditing ? (
+          <>
+            <Typography>{post.content}</Typography>
+            {post.image && (
+              <Box
+                sx={{
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  height: 300,
+                  "& img": { objectFit: "cover", width: 1, height: 1 },
+                }}
+              >
+                <img src={post.image} alt="post" />
+              </Box>
+            )}
 
-        {post.image && (
-          <Box
-            sx={{
-              borderRadius: 2,
-              overflow: "hidden",
-              height: 300,
-              "& img": { objectFit: "cover", width: 1, height: 1 },
-            }}
-          >
-            <img src={post.image} alt="post" />
-          </Box>
+            <PostReaction post={post} />
+          </>
+        ) : (
+          <PostEditForm post={post} setIsEditing={setIsEditing} page={page} />
         )}
-
-        <PostReaction post={post} />
         <CommentList postId={post._id} />
         <CommentForm postId={post._id} />
       </Stack>
-      {renderMenu}
     </Card>
   );
 }

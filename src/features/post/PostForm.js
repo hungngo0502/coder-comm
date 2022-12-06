@@ -1,13 +1,14 @@
 import React, { useCallback } from "react";
 import { Box, Card, alpha, Stack } from "@mui/material";
 
-import { FormProvider, FTextField, FUploadImage } from "../../components/form";
+import { FormProvider, FTextField } from "../../components/form";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { createPost } from "./postSlice";
 import { LoadingButton } from "@mui/lab";
+import FUploadImage from "../../components/form/FUploadImg";
 
 const yupSchema = Yup.object().shape({
   content: Yup.string().required("Content is required"),
@@ -73,7 +74,9 @@ function PostForm() {
 
           <FUploadImage
             name="image"
-            accept="image/*"
+            accept={{
+              "image/*": [".jpeg", ".png"],
+            }}
             maxSize={3145728}
             onDrop={handleDrop}
           />

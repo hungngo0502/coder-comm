@@ -45,7 +45,7 @@ function ActionButton({ currentUserId, targetUserId, friendship, sx }) {
       variant="contained"
       onClick={() => dispatch(sendFriendRequest(targetUserId))}
     >
-      {friendship.from === currentUserId ? "Resend" : "Send"} Request
+      {friendship.from === currentUserId ? "Resend" : "Send"} Req
     </Button>
   );
   const btnCancelRequest = (

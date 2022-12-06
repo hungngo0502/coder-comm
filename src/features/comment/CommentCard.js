@@ -1,114 +1,118 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Box,
   Button,
-  Divider,
-  Modal,
+  Container,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import { fDate } from "../../utils/formatTime";
 import CommentReaction from "./CommentReaction";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteComment } from "./commentSlice";
+import OptionMenu from "../../components/OptionMenu";
+import useAuth from "../../hooks/useAuth";
 import { useDispatch } from "react-redux";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import SendIcon from "@mui/icons-material/Send";
+import { updateComments } from "./commentSlice";
 
 function CommentCard({ comment }) {
-  const [openComment, setOpenComment] = React.useState(false);
-  const [chosenIdComment, setChosenIdComment] = useState(null);
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [editComment, setEditComment] = useState(comment.content);
+  const { user } = useAuth();
+  const cmtId = user._id;
   const dispatch = useDispatch();
-
-  const handleChooseComment = (id) => {
-    setOpenComment(true);
-    setChosenIdComment(id);
+  const inputRef = React.useRef();
+  const handleUpdateComment = (e) => {
+    e.preventDefault();
+    console.log(`TARGETTTT`, e.target.value);
+    console.log(`EDITTTTTTTTTTTTTTTTTTTTT`);
+    dispatch(
+      updateComments({
+        commentId: comment._id,
+        postId: comment.post,
+        content: editComment,
+      })
+    );
+    setIsEditing(false);
   };
-
-  const handleCloseComment = () => setOpenComment(false);
-
-  const handleDeleteComment = (id) => dispatch(deleteComment(id));
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
 
   return (
-    <Stack direction="row" spacing={2}>
-      <Avatar alt={comment.author?.name} src={comment.author?.avatarUrl} />
-      <Paper
-        sx={{ p: 1.5, flexGrow: 1, backgroundColor: "background.neutral" }}
-      >
-        <Stack
-          direction="row"
-          alignItems={{ sm: "center" }}
-          justifyContent="space-between"
-          sx={{ mb: 0.5 }}
-        >
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {comment.author?.name}
-          </Typography>
-          <Button onClick={() => handleChooseComment(comment._id)}>
-            <DeleteIcon />
-          </Button>
-          <Modal open={openComment} onClose={handleCloseComment}>
-            <Box sx={style}>
-              <Typography variant="h5" textAlign="center">
-                Delete Comment
-              </Typography>
-
-              <Typography
-                textAlign="center"
-                sx={{ marginTop: "10px", marginBottom: "10px" }}
-              >
-                Do you want to <b>delete</b> this comment?
-              </Typography>
-
-              <Box
-                direction="row"
-                spacing={2}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginTop: "15px",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleDeleteComment(chosenIdComment)}
+    <>
+      <Stack direction="row" spacing={2}>
+        <Avatar alt={comment.author?.name} src={comment.author?.avatarUrl} />
+        <Paper sx={{ p: 1.5, flexGrow: 1, bgcolor: "background.neutral" }}>
+          <Stack
+            direction="row"
+            alignItems={{ sm: "center" }}
+            justifyContent="space-between"
+            sx={{ mb: 0.5 }}
+          >
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              {comment.author?.name}
+              {""}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "text.disabled" }}>
+              {fDate(comment.createdAt)}
+            </Typography>
+          </Stack>
+          {isEditing ? (
+            <>
+              <form onSubmit={handleUpdateComment}>
+                <Container
+                  sx={{ display: "flex", paddingLeft: "0 !important" }}
                 >
-                  Delete
-                </Button>
+                  <TextField
+                    autoFocus={true}
+                    inputRef={inputRef}
+                    size="small"
+                    placeholder="Edit commment"
+                    value={editComment}
+                    onChange={(event) => setEditComment(event.target.value)}
+                    sx={{
+                      width: "90%",
+                      ml: 0,
+                      mr: 1,
+                      "&fieldset": {
+                        borderWidth: "1px !important",
+                        borderColor: (theme) =>
+                          `${theme.palette.grey[500_32]} !important`,
+                      },
+                    }}
+                  />
+                  <Button type="submit">
+                    <SendIcon />
+                  </Button>
+                </Container>
+              </form>
+            </>
+          ) : (
+            <>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                {comment.content}
+              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <CommentReaction comment={comment} />
               </Box>
-            </Box>
-          </Modal>
-        </Stack>
-        <Typography variant="caption" sx={{ color: "text.disabled" }}>
-          {fDate(comment.createdAt)}
-        </Typography>
-        <Divider />
-        <Typography
-          variant="body2"
-          sx={{ paddingTop: "20px", color: "text.secondary" }}
-        >
-          {comment.content}
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <CommentReaction comment={comment} />
-        </Box>
-      </Paper>
-    </Stack>
+            </>
+          )}
+        </Paper>
+        {cmtId === comment.author._id && (
+          <OptionMenu
+            postId={comment.post}
+            commentId={comment._id}
+            target={"comment"}
+            setIsEditing={setIsEditing}
+          />
+        )}
+      </Stack>
+    </>
   );
 }
 

@@ -1,26 +1,25 @@
-import React from "react";
 import {
-  Table,
-  TableHead,
   Avatar,
-  TableRow,
+  Box,
+  Link,
+  Table,
   TableBody,
   TableCell,
-  Link,
   TableContainer,
-  Box,
+  TableHead,
+  TableRow,
 } from "@mui/material";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-
-import FriendStatus from "./FriendStatus";
 import ActionButton from "./ActionButton";
+import FriendStatus from "./FriendStatus";
 
 function UserTable({ users }) {
   const { user } = useAuth();
   const currentUserId = user._id;
 
-  const getActionsAndStatus = (targetUser) => {
+  const getActionAndStatus = (targetUser) => {
     const props = {
       currentUserId: currentUserId,
       targetUserId: targetUser._id,
@@ -31,7 +30,6 @@ function UserTable({ users }) {
       action: <ActionButton {...props} />,
     };
   };
-
   return (
     <Box sx={{ overflowX: "auto" }}>
       <TableContainer sx={{ minWidth: 800 }}>
@@ -41,23 +39,23 @@ function UserTable({ users }) {
               <TableCell sx={{ width: { xs: "20%", sm: "25%" } }}>
                 Name
               </TableCell>
-              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              <TableCell sx={{ width: { xs: "20%", sm: "25%" } }}>
                 Email
               </TableCell>
-              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              <TableCell sx={{ width: { xs: "20%", sm: "25%" } }}>
                 Job Title
               </TableCell>
-              <TableCell
-                sx={{ display: { xs: "none", sm: "table-cell" }, width: "20%" }}
-              >
+              <TableCell sx={{ width: { xs: "20%", sm: "25%" } }}>
                 Status
               </TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell sx={{ width: { xs: "20%", sm: "25%" } }}>
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user) => {
-              const { status, action } = getActionsAndStatus(user);
+              const { status, action } = getActionAndStatus(user);
               return (
                 <TableRow key={user._id} hover>
                   <TableCell
@@ -81,12 +79,14 @@ function UserTable({ users }) {
                       {user.name}
                     </Link>
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{ display: { xs: "none", md: "table-cell" } }}
                   >
                     {user.email}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{ display: { xs: "none", md: "table-cell" } }}
@@ -95,11 +95,16 @@ function UserTable({ users }) {
                   </TableCell>
                   <TableCell
                     align="left"
-                    sx={{ display: { xs: "none", sm: "table-cell" } }}
+                    sx={{ display: { xs: "none", md: "table-cell" } }}
                   >
                     {status}
                   </TableCell>
-                  <TableCell align="left">{action}</TableCell>
+                  <TableCell
+                    align="left"
+                    sx={{ display: { xs: "none", md: "table-cell" } }}
+                  >
+                    {action}
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -50,7 +50,10 @@ const slice = createSlice({
       state.error = null;
 
       const { users, count, totalPages } = action.payload;
-      users.forEach((user) => (state.usersById[user._id] = user));
+      console.log(action.payload, `ACTION PAYLOAD FR RQ`);
+      users.forEach((user) => {
+        state.usersById[user._id] = user;
+      });
       state.currentPageUsers = users.map((user) => user._id);
       state.totalUsers = count;
       state.totalPages = totalPages;
@@ -132,10 +135,30 @@ export const getFriendRequests =
     try {
       const params = { page, limit };
       if (filterName) params.name = filterName;
-      const response = await apiService.get("/friends/requests/incoming", {
-        params,
-      });
-      dispatch(slice.actions.getFriendRequestsSuccess(response.data));
+      const responseIncoming = await apiService.get(
+        "/friends/requests/incoming",
+        {
+          params,
+        }
+      );
+      const responseOutgoing = await apiService.get(
+        "/friends/requests/outgoing",
+        {
+          params,
+        }
+      );
+      const { users: usersIn, count: countIn } = responseIncoming.data;
+      const { users: usersOut, count: countOut } = responseOutgoing.data;
+
+      const users = usersIn.concat(usersOut);
+      const count = countIn + countOut;
+      const totalPages = (count + 9) / 10;
+      const data = {
+        users: users,
+        count: count,
+        totalPages: totalPages,
+      };
+      dispatch(slice.actions.getFriendRequestsSuccess(data));
     } catch (error) {
       dispatch(slice.actions.hasError(error.message));
       toast.error(error.message);

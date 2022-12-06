@@ -1,42 +1,45 @@
-import React, { useEffect, useState } from "react";
 import {
+  Box,
+  Card,
+  Container,
+  Grid,
+  Pagination,
   Stack,
   Typography,
-  Card,
-  Box,
-  Pagination,
-  Grid,
-  Container,
 } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFriendRequests } from "./friendSlice";
 import UserCard from "./UserCard";
 import SearchInput from "../../components/SearchInput";
 
-function FriendRequests() {
+function FriendRequest() {
   const [filterName, setFilterName] = useState("");
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
 
   const { currentPageUsers, usersById, totalUsers, totalPages } = useSelector(
     (state) => state.friend
   );
-  const users = currentPageUsers.map((userId) => usersById[userId]);
-  const dispatch = useDispatch();
 
-  const handleSubmit = (searchQuery) => {
-    setFilterName(searchQuery);
-  };
+  const users = currentPageUsers.map((userId) => usersById[userId]);
+  console.log(currentPageUsers, `LAKJSD:LASIDUOASIDUDOASIUD`);
+  console.log(users);
 
   useEffect(() => {
     dispatch(getFriendRequests({ filterName, page }));
   }, [filterName, page, dispatch]);
 
+  const handleSubmit = (searchQuery) => {
+    setFilterName(searchQuery);
+  };
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 3 }}>
+        {" "}
         Friend Requests
       </Typography>
-      <Card sx={{ p: 3 }}>
+      <Card>
         <Stack spacing={2}>
           <Stack direction={{ xs: "column", md: "row" }} alignItems="center">
             <SearchInput handleSubmit={handleSubmit} />
@@ -46,12 +49,11 @@ function FriendRequests() {
               sx={{ color: "text.secondary", ml: 1 }}
             >
               {totalUsers > 1
-                ? `${totalUsers} requests found`
+                ? `${totalUsers} request found`
                 : totalUsers === 1
                 ? `${totalUsers} request found`
-                : "No request found"}
+                : "No request aha"}
             </Typography>
-
             <Pagination
               count={totalPages}
               page={page}
@@ -59,9 +61,8 @@ function FriendRequests() {
             />
           </Stack>
         </Stack>
-
         <Grid container spacing={3} my={1}>
-          {users.map((user) => (
+          {users?.map((user) => (
             <Grid key={user._id} item xs={12} md={4}>
               <UserCard profile={user} />
             </Grid>
@@ -72,4 +73,4 @@ function FriendRequests() {
   );
 }
 
-export default FriendRequests;
+export default FriendRequest;

@@ -1,20 +1,19 @@
-import React from "react";
 import { Chip } from "@mui/material";
+import React from "react";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
-import PauseCircleOutlineRoundedIcon from "@mui/icons-material/PauseCircleOutlineRounded";
-import MarkEmailReadRoundedIcon from "@mui/icons-material/MarkEmailReadRounded";
 import DoNotDisturbAltRoundedIcon from "@mui/icons-material/DoNotDisturbAltRounded";
+import MarkEmailReadRoundedIcon from "@mui/icons-material/MarkEmailReadRounded";
+import PauseCircleFilledRoundedIcon from "@mui/icons-material/PauseCircleFilledRounded";
 
 function FriendStatus({ currentUserId, targetUserId, friendship, sx }) {
   if (currentUserId === targetUserId) return null;
   if (!friendship) return null;
-
   if (friendship.status === "accepted") {
     return (
       <Chip
         sx={{ ...sx }}
         icon={<CheckCircleOutlineRoundedIcon />}
-        label="Friend"
+        label="friend"
         color="success"
       />
     );
@@ -25,7 +24,7 @@ function FriendStatus({ currentUserId, targetUserId, friendship, sx }) {
       <Chip
         sx={{ ...sx }}
         icon={<DoNotDisturbAltRoundedIcon />}
-        label="Declined"
+        label="declined"
         color="error"
       />
     );
@@ -38,7 +37,7 @@ function FriendStatus({ currentUserId, targetUserId, friendship, sx }) {
         <Chip
           sx={{ ...sx }}
           icon={<MarkEmailReadRoundedIcon />}
-          label="Request sent"
+          label="Request Sent"
           color="warning"
         />
       );
@@ -46,15 +45,13 @@ function FriendStatus({ currentUserId, targetUserId, friendship, sx }) {
       return (
         <Chip
           sx={{ ...sx }}
-          icon={<PauseCircleOutlineRoundedIcon />}
-          label="Waiting for repsonse"
+          icon={<PauseCircleFilledRoundedIcon />}
+          label="Waiting for response"
           color="warning"
         />
       );
     }
   }
-
-  return null;
 }
 
 export default FriendStatus;
